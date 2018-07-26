@@ -1,0 +1,7 @@
+---
+network:
+  nodes:
+    - h1:
+      interfaces
+      if0: 10.1.1.4/24
+      if1

@@ -1,0 +1,5 @@
+---
+network:
+  nodes:
+    h1:
+      ipaddress

@@ -1,0 +1,9 @@
+---
+## Following are all of Magoo's defaults 
+Name: MrMagoo
+Port: 1199
+Basedir: /srv/magfs
+Debug: false
+Client: false
+Server: true
+

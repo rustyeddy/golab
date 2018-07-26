@@ -1,0 +1,22 @@
+---
+network:
+  name: mynet
+  hosts: [ h1, h2, h3, h4 ]
+  links: [ l12, l24, l32, l43 ]
+  ipnet: 10.24.0.0/16
+  domain: example.com
+
+hosts:
+  h2:
+    ifaces: [ eth1, eth2, eth3, lo0, gre0 ]
+      eth1: 10.24.1.2/24
+      eth2: 10.24.2.2/24
+      eth3: 10.24.3.2/24
+      lo0: 127.0.0.1/32
+      gre0: 10.23.0.66
+
+links:
+  l12: [ h1.if2, h2.if2 ]
+  l24: [ h2.if1, h4.if4 ]
+  l32: [ h3.if1, h2.if4 ]
+  l43: [ h4.if4, h3.if2 ]

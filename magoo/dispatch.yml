@@ -1,0 +1,17 @@
+---
+dispatch:
+  - url: "*/favicon.ico"
+    service: default
+
+  - url: "clowdops.appspot.net/"
+    service: default
+
+  - url: "clowdops.appspot.net/store/"
+    service: store
+
+  # - url: "*/magoo/.*"
+  #   service: test
+  #
+  # - url: "*/test/.*"
+  #   service: test
+  
