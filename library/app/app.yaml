@@ -1,0 +1,11 @@
+runtime: go
+env: flex
+api_version: 1
+
+env_variables:
+  OAUTH2_CALLBACK: https://clowdops.appspot.com/oauth2callback
+
+# This should match the value in config.go
+beta_settings:
+#  cloud_sql_instances: INSTANCE_CONNECTION_NAME
+# [END cloudsql_settings]
