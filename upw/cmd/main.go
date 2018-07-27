@@ -12,9 +12,7 @@ import (
 	"github.com/rustyeddy/golab/upw"
 	log "github.com/rustyeddy/logrus"
 
-	"github.com/rustyeddy/golang-upwork/api/routers/auth"
 	"github.com/upwork/golang-upwork/api"
-	"github.com/upwork/golang-upwork/api/routers/jobs/search"
 )
 
 type request struct {
@@ -39,6 +37,11 @@ func init() {
 }
 
 func main() {
+	var (
+		jobs *upw.Jobs
+		err  error
+	)
+
 	flag.Parse()
 	client = getConfig()
 
@@ -56,33 +59,14 @@ func main() {
 		log.Fatal("at least one of query, title or skills are required")
 	}
 
-	/*
-	 * Figure out who the user is and proceed with authorization
-	 * http.Response and []byte will be return, you can use any
-	 * TODO - need to respond properly to various results
-	 */
-	var resp *http.Response
-	resp, _ = auth.New(client).GetUserInfo()
-	if resp.StatusCode >= 400 {
-		log.Fatalf("failed to authorize editor %d", resp.StatusCode)
+	if jobs, err = upw.FetchJobs(params); err != nil {
+		log.Fatal("FetchJobs params: ", params, err)
 	}
 
-	var cont []byte
-	upJobs := search.New(client)
-	if resp, cont = upJobs.Find(params); resp.StatusCode >= 400 {
-		log.Fatalf("failed to find a job %v", resp)
-	}
-
-	var jobs upw.Jobs
-	if err := json.Unmarshal(cont, &jobs); err != nil {
-		log.Fatalf("could not unmarshal ", err)
-	}
-
-	fmt.Printf("  ============== Jobs =============\n", len(jobs.Jobs))
+	fmt.Printf("  ============== Jobs [%d] =============\n", len(jobs.Jobs))
 	fmt.Printf(" time %v user %+v\n", jobs.ServerTime, jobs.AuthUser)
-
 	for _, job := range jobs.Jobs {
-		fmt.Printf("%s - %s\n", job.Id, job.Title)
+		fmt.Printf("~ %s - %s\n", job.Id, job.Title)
 	}
 }
 

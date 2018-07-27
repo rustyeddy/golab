@@ -1,5 +1,6 @@
 build:
-	go build -o up main.go
+	go build -o up 
 
 run:
-	go run main.go
+	make -C cmd run
+
