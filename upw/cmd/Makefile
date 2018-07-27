@@ -9,3 +9,6 @@ run:
 runv:
 	go run -v *.go
 
+clean:
+	go clean 
+	rm *~
