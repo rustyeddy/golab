@@ -3,10 +3,19 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"golang.org/x/text/search"
 )
+
+// AuthUser represents an Upwork account
+type AuthUser struct {
+	First          string `json:"first_name"`
+	Last           string `json:"last_name"`
+	Timezone       string `json:"timezone"`
+	TimezoneOffset string `json:"timezone_offset"`
+}
 
 // JobList is the result of the GetJobs request
 type JobList struct {
@@ -18,64 +27,42 @@ type JobList struct {
 
 // Job is an advertised paying gig
 type Job struct {
-	Id      string
+	Id      string `json:"id"`
 	Title   string
 	Snippet string
 	URL     string
 
-	Category2    string
-	Subcategory2 string
+	Category2    string `json:"category2"`
+	Subcategory2 string `json:"subcategory2"`
 
-	// TODO turn skills into a type
-	Skills []string
+	Skills []string `json:"skills"`
 
-	JobType     string  `json:"job_type"`
 	Budget      float64 `json:"budget"`
 	Duration    string  `json:"duration"`
 	Workload    string  `json:"workload"`
 	JobStatus   string  `json:"job_status"`
-	DateCreated string  `json:"date_Created"`
+	JobType     string  `json:"job_type"`
+	DateCreated string  `json:"date_created"`
 
-	Client
-}
-
-// AuthUser represents an Upwork account
-type AuthUser struct {
-	First          string `json:"first_name"`
-	Last           string `json:"last_name"`
-	Timezone       string `json:"timezone"`
-	TimezoneOffset string `json:"timezone_offset"`
-}
-
-// Client is the person advertising the job looking to hire the client
-type Client struct {
-	Country      string
-	Feedback     int
-	ReviewsCount int `json:"reviews_count"`
-	JobsPosted   int `json:"jobs_posted"`
-	PastHires    int `json:"past_hires"`
+	Client `json:"client"`
 }
 
 // Get the Job List from Upwork based on search parameters
 func getJobList() (*JobList, error) {
-
 	params := make(map[string]string)
-	if *title != "" {
+	switch {
+	case *title != "":
 		params["title"] = *title
-	}
-	if *query != "" {
+	case *query != "":
 		params["query"] = *query
-	}
-	if *skill != "" {
+	case *skill != "":
 		params["skills"] = *skill
 	}
 
-	var jlist *JobList
-	jlist, err = GetJobList(params)
+	jlist, err := GetJobList(params)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("params %v: %v", params, err)
 	}
-
 	return jlist, nil
 }
 
