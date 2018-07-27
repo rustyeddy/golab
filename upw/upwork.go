@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	log "github.com/rustyeddy/logrus"
+
 	"github.com/upwork/golang-upwork/api"
 )
 
@@ -24,13 +26,7 @@ func apiClient() api.ApiClient {
 	cfg := api.ReadConfig(cfgfile)
 	client := api.Setup(cfg)
 	if !client.HasAccessToken() {
-		// Get access token
-		aurl := client.GetAuthorizationUrl("")
-		fmt.Printf("  authorization URL %s", aurl)
-		reader := bufio.NewReader(os.Stdin)
-		verifier, _ := reader.ReadString('\n')
-		token := client.GetAccessToken(verifier)
-		fmt.Printf("   ~ Token: %v", token)
+		getAccessToken(cfg)
 	}
 	return client
 }
@@ -48,4 +44,26 @@ func saveConfig(fn string, cfg *api.Config) error {
 		return fmt.Errorf("failed to save file %s -> %v", fn, err)
 	}
 	return nil
+}
+
+func getAccessToken(cfg *api.Config) {
+	aurl := client.GetAuthorizationUrl("")
+
+	// read verifier
+	reader := bufio.NewReader(os.Stdin)
+	log.Debugln("Visit the authorization url and provide oauth_verifier for ")
+	log.Debugln("further authorization")
+	log.Debugln(aurl)
+	verifier, _ := reader.ReadString('\n')
+
+	// get access token
+	token := client.GetAccessToken(verifier)
+	log.Debug("authorization token", token)
+
+	cfg.AccessToken = token.Token
+	cfg.AccessSecret = token.Secret
+	err := saveConfig(cfgfile, cfg)
+	if err != nil {
+		log.Fatalf("failed to save config file %v", err)
+	}
 }
