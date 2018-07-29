@@ -3,36 +3,35 @@ package main
 import (
 	"time"
 	"net"
+	"os"
 	"io"
 	log "github.com/rustyeddy/logrus"
 )
 
-func StartTimeService() (err error) {
-
-	ln, err := net.Listen("tcp", "localhost:1231")
+func TimeClient(hostport string) {
+	conn, err := net.Dial("tcp", hostport)
 	if err != nil {
-		log.Fatalf("tcp localhost:1231 err ", err)
+		log.Fatalf(" %s, %v", hostport, err)
 	}
-
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			log.Fatalf("listen %s %s %v", cfg.Proto, cfg.Hostport)
-			continue
-		}
-		go handleTimeSvcConn(conn)
+	defer conn.Close()
+	done := make(chan bool)
+	go func(c net.Conn) {
+		io.Copy(os.Stdout, conn) // XXX Ignoring errors
+		log.Println("done")
+	}(conn)
+	if _, err := io.Copy(conn, os.Stdin); err != nil {
+		log.Fatalln(err)
 	}
-	
-	return nil
+	done <- true
 }
 
-func handleTimeSvcConn(c net.Conn) (err error) {
+func hndlTimeConn(c net.Conn) {
 	defer c.Close()
 	for {
 		t := time.Now()
 		_, err := io.WriteString(c, t.Format(time.RFC3339) + "\n")
 		if err != nil {
-			return err
+			log.Errorln("hndlTimeConn", err)
 		}
 		time.Sleep(1 * time.Second)
 	}

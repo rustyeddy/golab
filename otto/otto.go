@@ -33,7 +33,11 @@ func init() {
 
 func main() {
 	fmt.Println("OttO ... ")
-	StartTimeService()
+
+	done := make(chan bool)
+	go StartService("time", "localhost:1231", done, hndlTimeConn)
+	go StartService("echo", "localhost:1331", done, hndlEchoConn)
+	<-done
 }
 
 
