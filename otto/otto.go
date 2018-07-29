@@ -24,27 +24,27 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Starting spinner... ")
-
-	listener, err := net.Listen("tcp", "localhost:1231")
+	fmt.Println("OttO ... ")
+	ln, err := net.Listen("tcp", "localhost:1231")
 	if err != nil {
 		log.Fatalf("tcp localhost:1231 err ", err)
 	}
 
 	for {
-		conn, err := net.Listen(cfg.Proto, cfg.Hostport)
+		conn, err := ln.Accept()
 		if err != nil {
 			log.Fatalf("listen %s %s %v", cfg.Proto, cfg.Hostport)
 			continue
 		}
-		handleConn(conn)
+		go handleConn(conn)
 	}
 }
 
 func handleConn(c net.Conn) {
 	defer c.Close()
 	for {
-		_, err := io.WriteString(c, time.Now().Format("14:04:04\n"))
+		t := time.Now()
+		_, err := io.WriteString(c, t.Format(time.RFC3339) + "\n")
 		if err != nil {
 			return 
 		}
