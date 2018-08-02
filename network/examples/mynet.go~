@@ -1,6 +1,0 @@
-package examples
-
-func MyNetwork() (net *model.Network) {
-  
-  return 
-}

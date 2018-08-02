@@ -14,12 +14,5 @@ type Host struct {
 
 type Server struct {
 	Node
-	Service
-}
-
-type Service struct {
-	proto       net.Http
-	ipaddr      string
-	port        int
-	description string
+	Services []*Service
 }
