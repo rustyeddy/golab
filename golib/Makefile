@@ -1,4 +1,5 @@
-libs = cmd dns gen rlog site srv util walk
+build:
+	go build
 
-test: $(libs)
-	cd $^ && go test
+test:
+	go test

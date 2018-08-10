@@ -70,3 +70,8 @@ func TestMkdir(t *testing.T) {
 		})
 	}
 }
+
+// TestCopyFiles will test coping the contents from one place to another
+func TestFileCopy(t *testing.T) {
+	t.Errorf("test has yet to be create, MUST create!")
+}

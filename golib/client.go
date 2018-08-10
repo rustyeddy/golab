@@ -1,4 +1,4 @@
-package magoo
+package golib
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type MagooClient struct {
+type Client struct {
 	baseurl        string
 	url            string // full url
 	*http.Response        // the response we will send
@@ -21,10 +21,10 @@ func init() {
 	localurl = "http://localhost:1199/magoo/"
 }
 
-// NewMagooClient returns a structure ready to communicate with
+// NewClient returns a structure ready to communicate with
 // your favorite magoo server, whereever that may be
-func NewMagooClient(u string) *MagooClient {
-	return &MagooClient{
+func NewClient(u string) *Client {
+	return &Client{
 		baseurl:  localurl,
 		url:      "",
 		Response: nil,
@@ -32,12 +32,12 @@ func NewMagooClient(u string) *MagooClient {
 }
 
 // Geturl returns the baseurl + args
-func (mc *MagooClient) Geturl(args string) string {
+func (mc *Client) Geturl(args string) string {
 	return mc.baseurl + args
 }
 
 // Get sends a getrequest to the specfied server
-func (mc *MagooClient) Get(args string) (resp *http.Response, err error) {
+func (mc *Client) Get(args string) (resp *http.Response, err error) {
 	mc.url = mc.baseurl + args
 	resp, err = http.Get(mc.url)
 	if err != nil {
@@ -57,7 +57,7 @@ func (mc *MagooClient) Get(args string) (resp *http.Response, err error) {
 }
 
 // Post a request to the specified server.
-func (mc *MagooClient) Post(url string, args map[string][]string) (resp *http.Response, err error) {
+func (mc *Client) Post(url string, args map[string][]string) (resp *http.Response, err error) {
 	resp, err = http.PostForm(url, args)
 	if err != nil {
 		return nil, err
@@ -74,32 +74,27 @@ func (mc *MagooClient) Post(url string, args map[string][]string) (resp *http.Re
 	return resp, nil
 }
 
-func (mc *MagooClient) GetMagoo() (*http.Response, error) {
-	return mc.Get("")
-}
-
-func (mc *MagooClient) GetEntries() (*http.Response, error) {
+func (mc *Client) GetEntries() (*http.Response, error) {
 	r, e := mc.Get("entry")
 	return r, e
 }
 
-func (mc *MagooClient) GetEntry(id int64) (*http.Response, error) {
+func (mc *Client) GetEntry(id int64) (*http.Response, error) {
 	r, e := mc.Get("entry/" + string(id))
 	return r, e
 }
 
-func (mc *MagooClient) PostEntry(args map[string][]string) (*http.Response, error) {
+func (mc *Client) PostEntry(args map[string][]string) (*http.Response, error) {
 	r, e := mc.Post("entry/", args)
 	return r, e
 }
 
-func DoMagooClient() {
-
+func DoClient(args string) {
 	var resp *http.Response
 	var err error
 
-	mc := NewMagooClient("")
-	resp, err = mc.GetMagoo()
+	mc := NewClient("")
+	resp, err = mc.Get(args)
 	if err != nil {
 		log.Printf("failed to get a magoo client, exiting ... ")
 		log.Fatal(err)
@@ -113,12 +108,10 @@ func DoMagooClient() {
 	}
 	log.Printf("GET /magoo/entry => %+v", resp)
 	vals := map[string][]string{
-		"MagooId":   {"MrMagoo"},
-		"EntryId":   {"0"},
-		"Name":      {"tstform"},
-		"FormId":    {"0"},
-		"TransId":   {string(GetNextId())},
-		"Timestamp": {GetTimeStamp()},
+		"Id":      {"Mr"},
+		"EntryId": {"0"},
+		"Name":    {"tstform"},
+		"FormId":  {"0"},
 	}
 
 	resp, err = mc.Post("submit/", vals)

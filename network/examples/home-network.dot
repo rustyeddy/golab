@@ -1,0 +1,10 @@
+
+graph "homenet" {
+    R -- I;
+    C -- I;
+    rp1 -- R;
+    rp2 -- R;
+    bb1 -- R;
+}
+
+

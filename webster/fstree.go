@@ -2,13 +2,10 @@ package jen
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/rustyeddy/webster/lib"
 )
-
-var rlog = lib.GetRLogger()
 
 // ============ File Implementation ==========================
 
@@ -158,23 +155,23 @@ func (d *Dir) setFile(f *File) {
 // ScanSubdirs from the source tree ready it for translation
 func (d *Dir) ScanSubdirs() (err error) {
 
-	rlog.FileSystem("scanning subdirs of %s", d.Path)
+	log.FileSystem("scanning subdirs of %s", d.Path)
 	rootpath := d.Path
 
 	// Scan the root directory.  Gather directories, markdown and template files.
 	err = filepath.Walk(d.Path, func(path string, fi os.FileInfo, err error) (e error) {
 
-		rlog.FileSystem("path: %s", path)
+		log.FileSystem("path: %s", path)
 
 		if path == rootpath {
-			rlog.FileSystem("\tskipping root directory %s", "")
+			log.FileSystem("\tskipping root directory %s", "")
 			return nil
 		}
 
 		// Get basename and ignore hidden files
 		basename := filepath.Base(path)
 		if basename[0] == '.' {
-			rlog.FileSystem("\tignoring hidden dir and files %s", basename)
+			log.FileSystem("\tignoring hidden dir and files %s", basename)
 			if fi.IsDir() {
 				// Must return SkipDir to stop descending into the hidden dir
 				return filepath.SkipDir
@@ -192,7 +189,7 @@ func (d *Dir) ScanSubdirs() (err error) {
 
 		// If this node is a directory we'll create the representative struct
 		if fi.IsDir() {
-			rlog.FileSystem("\tdir %s - %s", relpath, path)
+			log.FileSystem("\tdir %s - %s", relpath, path)
 			dir, err := NewDir(path, nil)
 			if err != nil {
 				return fmt.Errorf("\tfailed to create dir %s err %v", path, err)
@@ -205,12 +202,12 @@ func (d *Dir) ScanSubdirs() (err error) {
 		fp := NewFileInfo(path, fi)
 		switch fp.Fileext {
 		case ".md":
-			rlog.FileSystem("\tmarkdown rel %s path %s", relpath, path)
+			log.FileSystem("\tmarkdown rel %s path %s", relpath, path)
 			md := fp.NewMdfile(path)
 			d.mdfiles[relpath] = md
 
 		case ".tmpl":
-			rlog.FileSystem("\ttemplate rel %s path %s", relpath, path)
+			log.FileSystem("\ttemplate rel %s path %s", relpath, path)
 			tmpl, err := fp.NewTmpl8(path, fp.Noext)
 			if err != nil {
 				return fmt.Errorf("%v", err)
@@ -218,7 +215,7 @@ func (d *Dir) ScanSubdirs() (err error) {
 			SetTmpl8(tmpl)
 
 		default:
-			rlog.FileSystem("\tfile rel %s path %s", relpath, path)
+			log.FileSystem("\tfile rel %s path %s", relpath, path)
 			d.files[relpath] = fp
 		}
 		return nil

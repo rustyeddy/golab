@@ -1,5 +1,10 @@
 package golib
 
+import (
+	"fmt"
+	"time"
+)
+
 func FibinucciSpinner() {
 	fmt.Println("Starting spinner... ")
 	go spinner(300 * time.Millisecond)
